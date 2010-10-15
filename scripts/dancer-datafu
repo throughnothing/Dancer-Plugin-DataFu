@@ -1,0 +1,44 @@
+#!/usr/bin/perl
+# ABSTRACT: Copy HTML Templates to Application Directory
+
+use warnings;
+use strict;
+
+package dancer_datafu;
+use Dancer::Plugin::DataFu;
+use File::ShareDir ':ALL';
+use File::Copy;
+use Cwd;
+
+=head1 SYNOPSIS
+
+This script will copy the default TT (Template-Toolkit) HTML form and grid/table
+templates stored in the main Perl library, to the current working directory.
+
+=cut
+
+sub copy_templates {
+    my $to   = Cwd::getcwd();
+    my $from = module_dir('Dancer::Plugin::DataFu') . "/elements";
+    for (qw/
+         form
+         input_checkbox
+         input_file
+         input_hidden
+         input_password
+         input_radio
+         input_text
+         select
+         select_multiple
+         textarea/) {
+        copy("$from/$_.tt","$to/$_.tt") or
+            die "Dancer-Plugin-DataFu failed copying TT HTML templates: $from/$_.tt to $to/$_.tt, $!";
+    }
+    print
+        "Dancer-Plugin-DataFu copied TT HTML templates to $to\n";
+}
+
+# copy standard templates to the cwd
+copy_templates;
+
+1;

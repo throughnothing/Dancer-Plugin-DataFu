@@ -1,0 +1,3 @@
+<table id="form_[% name %]" name="form_[% name %]">
+[% content %]
+</table>
