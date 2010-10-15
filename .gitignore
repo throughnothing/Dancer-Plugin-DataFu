@@ -1,5 +1,7 @@
 datafu.kpf
 eg
 eg/*
+lib/Dancer/Plugin/DataFu/logs
+lib/Dancer/Plugin/DataFu/logs/*
 Dancer-Plugin-DataFu-*
 Dancer-Plugin-DataFu-*/*
