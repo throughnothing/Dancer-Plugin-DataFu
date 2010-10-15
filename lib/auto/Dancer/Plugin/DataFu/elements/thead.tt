@@ -1,1 +1,1 @@
-        <th>[% colm.header %]</th>
+        <th>[% col.header %]</th>

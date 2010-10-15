@@ -1,3 +1,6 @@
-<table id="form_[% name %]" name="form_[% name %]">
-[% content %]
+<table id="grid_[% name %]" name="grid_[% name %]">
+[% header -%]
+[% navgiation %]
+[% rows %]
+[% navigation %]
 </table>

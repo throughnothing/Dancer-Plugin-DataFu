@@ -53,7 +53,8 @@ sub render {
             vars  => $form_vars
         };
         $form_parts[$counter] = '';
-        $template->process( $html, $args, \$form_parts[$counter] );
+        $template->process( $html, $args, \$form_parts[$counter] )
+        || die $template->error;
         $counter++;
     }
     my $template = Template->new(
@@ -72,7 +73,8 @@ sub render {
     };
     my $content;
 
-    $template->process( $html, $args, \$content );
+    $template->process( $html, $args, \$content )
+    || die $template->error;
     return $content;
 }
 
@@ -113,7 +115,8 @@ sub render_control {
             vars  => $form_vars
         };
         $form_parts[$counter] = '';
-        $template->process( $html, $args, \$form_parts[$counter] );
+        $template->process( $html, $args, \$form_parts[$counter] )
+        || die $template->error;
         $counter++;
     }
 
@@ -181,7 +184,9 @@ sub templates {
 
         die "No TT HTML tempxlates where found under $template_directory"
           if keys %{ $self->{templates} } <= 1;
-
+        
+        $self->{settings} = $settings;
+        
         bless $self, $class;
         return $self;
     }

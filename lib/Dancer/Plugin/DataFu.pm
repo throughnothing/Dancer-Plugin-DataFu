@@ -55,7 +55,7 @@ configuration.
         
 =head1 FORM PROFILES
 
-    ... myapp/data/profiles/user.pl
+    ... myapp/profiles/user.pl
     
     # user validation profile
 
@@ -94,29 +94,55 @@ be referenced as ...
 
 =head1 GRID PROFILES
 
+    ... myapp/profiles/table/user.pl
+
     our $profile = {
         
         'header'  => 'example table header',
         'columns' => [
             {
-                header  => 'action',
-                bindkey => 'id',
+                header  => 'ID',
+                bindto  => 'id',
                 element => {
                     type => 'input_checkbox'
                 }
             },
             {
-                header => 'col1',
+                header => 'Column One',
+                bindto => 'col1',
             },
             {
-                header => 'col2',
+                header => 'Column Two',
+                bindto => 'col2',
             },
             {
-                header => 'col2',
+                header => 'Action',
+                data   => sub {
+                    my ($self, $row) = @_;
+                    return $row->{col1};
+                },
             }
         ],
+        'navigation' => sub {
+            my ($self, $dataset) = @_;
+            return 'Found ' . @{$dataset} . ' records';
+        }
         
     };
+    
+    my $dataset = [
+        { id => 100, col1 => 'column1a', col2 => 'column2a' },
+        { id => 101, col1 => 'column1b', col2 => 'column2b' },
+        { id => 102, col1 => 'column1c', col2 => 'column2c' },
+        { id => 103, col1 => 'column1d', col2 => 'column2d' },
+        { id => 104, col1 => 'column1e', col2 => 'column2e' },
+        { id => 105, col1 => 'column1f', col2 => 'column2f' },
+        { id => 106, col1 => 'column1g', col2 => 'column2g' },
+        { id => 107, col1 => 'column1h', col2 => 'column2h' },
+        { id => 108, col1 => 'column1i', col2 => 'column2i' },
+        { id => 109, col1 => 'column1j', col2 => 'column2j' },
+    ];
+    grid->render('name', $dataset, 'user');
 
 =cut
 
