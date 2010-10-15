@@ -134,6 +134,7 @@ sub render {
                 
             $tvars->{colm} = $profile->{columns}->[$i];
             $grid_parts[$counter++] = $tempro->($self->temppath('tdata.tt'), $tvars);
+            
         }
         
         push @grid_table, $tempro->($self->temppath('trow.tt'), {
