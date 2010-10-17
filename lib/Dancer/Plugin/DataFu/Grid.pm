@@ -65,6 +65,8 @@ use File::ShareDir qw/:ALL/;
         die "No TT HTML tempxlates where found under $template_directory"
           if keys %{ $self->{templates} } <= 1;
     
+        $self->{settings} = $settings;
+    
         bless $self, $class;
         return $self;
     }
@@ -96,7 +98,7 @@ sub render {
         
         my $data = undef;
         
-        $template->process( $file, $args, \$data );
+        $template->process( $file, $args, \$data ) || die $template->error;
         
         return $data;
     };
@@ -105,20 +107,24 @@ sub render {
     my @grid_table = ();
     my @grid_parts = ();
     my $tvars      = {
+        col     => undef,
+        row     => undef,
+        grid    => $self,
         name    => $name,
         prof    => $profile,
-        vars    => $configuration
+        vars    => $configuration,
+        data    => $dataset,
+        content => undef
     };
     
-    # headers
+    # column headers
     for (my $i = 0; $i < @{$profile->{columns}}; $i++){
-        $tvars->{colm} = $profile->{columns}->[$i];
+        $tvars->{col} = $profile->{columns}->[$i];
         $grid_parts[$counter++] = $tempro->($self->temppath('thead.tt'), $tvars);
     }
     
-    push @grid_table, $tempro->($self->temppath('trow.tt'), {
-        content => join( "\n", @grid_parts ),
-    });
+    $tvars->{content} = join( "\n", @grid_parts );
+    push @grid_table, $tempro->($self->temppath('trow.tt'), $tvars);
     
     @grid_parts = ();
     $counter = 0;
@@ -128,73 +134,44 @@ sub render {
         
         for (my $i = 0; $i < @{$profile->{columns}}; $i++) {
             
+            # use dataset value if bindto exists
             $profile->{columns}->[$i]->{data}
                 =  $row->{$profile->{columns}->[$i]->{bindto}}
                 if defined $profile->{columns}->[$i]->{bindto};
                 
-            $tvars->{colm} = $profile->{columns}->[$i];
+            $tvars->{row} = $row;
+            $tvars->{col} = $profile->{columns}->[$i];
             $grid_parts[$counter++] = $tempro->($self->temppath('tdata.tt'), $tvars);
             
         }
         
-        push @grid_table, $tempro->($self->temppath('trow.tt'), {
-            content => join( "\n", @grid_parts ),
-        });
+        $tvars->{content} = join( "\n", @grid_parts );
+        push @grid_table, $tempro->($self->temppath('trow.tt'), $tvars);
         
         @grid_parts = ();
         $counter = 0;
         
     }
     
-    # navigation
-    
-    return $tempro->($self->temppath('table.tt'), {
-        content => join( "\n", @grid_table ),
-    });
-}
-
-sub render_control {
-    my ( $self, @fields ) = @_;
-    my $form_vars = {};
-
-    # check for form template vars
-    if ( ref( $fields[@fields] ) eq "HASH" ) {
-        $form_vars = pop @fields;
-    }
-
-    my $counter    = 0;
-    my @form_parts = ();
-    foreach my $field (@fields) {
-        $self->{data}->check_field($field);
-        die "The field `$field` does not have an element directive"
-          unless defined $self->{data}->{fields}->{$field}->{element};
-        my $template = Template->new(
-            INTERPOLATE => 1,
-            EVAL_PERL   => 1,
-            ABSOLUTE    => 1,
-            ANYCASE     => 1
+    # table header
+    if (defined $profile->{header}) {
+        $tvars->{col} = $profile->{columns};
+        $tvars->{header} = $tempro->($self->temppath('trow.tt'),
+            { content => $tempro->($self->temppath('theader.tt'), $tvars) }
         );
-        my $type = $self->{data}->{fields}->{$field}->{element}->{type};
-        my $html = $self->temppath( $self->{templates}->{$type} );
-        $html =
-          $self->temppath(
-            $self->{data}->{fields}->{$field}->{element}->{template} )
-          if defined $self->{data}->{fields}->{$field}->{element}->{template};
-
-        my $tvars = $self->{data}->{fields}->{$field};
-        $tvars->{name} = $field;
-        my $args = {
-            form  => $self->{data},
-            field => $tvars,
-            this  => $field,
-            vars  => $form_vars
-        };
-        $form_parts[$counter] = '';
-        $template->process( $html, $args, \$form_parts[$counter] );
-        $counter++;
     }
-
-    return @form_parts;
+    
+    # footer
+    if (defined $profile->{navigation}) {
+        $tvars->{col} = $profile->{columns};
+        $tvars->{navigation} = $tempro->($self->temppath('trow.tt'),
+            { content => $tempro->($self->temppath('tnavigation.tt'), $tvars) }
+        );
+    }
+    
+    # output table
+    $tvars->{rows} = join( "\n", @grid_table );
+    return $tempro->($self->temppath('table.tt'), $tvars);
 }
 
 sub templates {
