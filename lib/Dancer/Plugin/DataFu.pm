@@ -42,7 +42,7 @@ Form rending and input validation is done almost indentically to that of CPAN mo
 L<Oogly::Aagly>, please examine that POD (documentation) for a more indepth look at
 configuration.
 
-=head1 WHY DATAFU IS GREAT
+=head1 WHY DataFu IS GREAT
 
 What Dancer::Plugin::DataFu does is complex, but what it asks the user/developer
 to do is simple. This is what makes Dancer::Plugin::DataFu awesome amongst other
@@ -203,6 +203,8 @@ element is passed the following variables...
         vars  => $additional_custom_variables_hashref
     };
 
+=over
+
 =item form.tt
 
     ... form.tt
@@ -336,6 +338,8 @@ element is passed the following variables...
             type => 'textarea',
         }
     };
+    
+=back
 
 =head1 GRID PROFILES
 
@@ -443,6 +447,8 @@ element is passed the following variables...
         vars  => $additional_custom_variables_hashref
     };
 
+=over
+
 =item table.tt
 
     ... table.tt
@@ -474,6 +480,8 @@ element is passed the following variables...
 
     ... trow.tt
     This template is a wrapper that encapsulates the current table row.
+    
+=back
 
 =head1 METHODS
 
@@ -519,9 +527,9 @@ runtime.
 =head1 DISCLAIMER
 
 I suppose I should mention that the form validation and rendering portion of this
-package has been ported from L<Oogly::Aagly> which means that it has undergone alot
-more testing and design then the grid rendering portion. So I you would just be
-a little patient I'll make sure I catch up.
+package has been ported from L<Oogly::Aagly> which means that it has undergone a
+lot more testing and design than the grid rendering portion. So I hope you will 
+be a little patient, I'll make sure I catch up.
 
 =cut
 
