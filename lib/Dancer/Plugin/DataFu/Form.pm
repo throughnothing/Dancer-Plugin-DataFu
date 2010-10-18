@@ -137,7 +137,7 @@ sub templates {
         my $profiles = $settings->{form}->{profiles}
           || die 'No form profiles are configured in the config file';
         my @profiles =
-          glob path( dirname($0), ( split /[\\\/]/, $profiles ), '*.pl' );
+          glob path( config->{appdir}, ( split /[\\\/]/, $profiles ), '*.pl' );
         my $self   = {};
         my $fields = {};
 
@@ -169,7 +169,7 @@ sub templates {
 
         my $template_directory =
           $settings->{form}->{templates}
-          ? path( dirname($0), $settings->{form}->{templates} )
+          ? path( config->{appdir}, $settings->{form}->{templates} )
           : module_dir('Dancer::Plugin::DataFu') . "/elements/";
 
         $self->{data} =
