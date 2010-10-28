@@ -455,7 +455,7 @@ the name of the profile. e.g.
         { id => 109, col1 => 'column1j', col2 => 'column2j' },
     ];
 
-    grid->render('name', $dataset, 'profile_name');
+    grid->render('name', 'profile_name', $dataset);
     
 =head2 GRID PROFILE SPECIFICATION
 
@@ -485,10 +485,10 @@ profile can have the following definitions.
         # hint: return <a href="?action=edit&id=$row->{id}">Edit</a>
         ...
     }
-    element => {
-        type => 'input_checkbox',
-        value => '1'
-    }
+    
+    # navigation is a code reference that can be used to generate a
+    # sophisticated navigation element at the beginning, end, or both ends
+    # of the rendered table
     
 =head2 GRID TEMPLATES
 
@@ -544,11 +544,15 @@ element is passed the following variables...
 
 =head2 render
 
-The render method returns compiled html for the form or grid object the called it.
+The render method returns compiled html for the form or grid object that called it.
 Additionally you can pass a hashref of key/value pairs as the last argument to
-render to include additional variables in the processing of the template.
+the render function to include additional variables in the processing of the template.
 
-    $self->render( 'form_name', '/form/action_url', @fields, \%more_vars );
+    # form context
+    $self->render( $form_name, $action_url, @profile_fields, \%more_vars );
+    
+    # grid context
+    $self->render( $grid_name, $profile_name, \@dataset );
 
 =head2 render_control
 
@@ -557,10 +561,10 @@ This is useful when you need to break out of the canned form rendering layout an
 prefer to render the form fields individually.The render_control method may be
 passed one or many form field names.
 
-    $self->render_control('field_name');
+    $form->render_control('field_name');
     
     # return multiple form elements as an array
-    $self->render_control(@fields);
+    $form->render_control(@fields);
 
 =head2 templates
 

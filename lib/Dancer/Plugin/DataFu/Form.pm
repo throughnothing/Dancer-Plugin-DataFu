@@ -290,13 +290,13 @@ sub templates {
             name        => sub { 1 },
             filter      => sub { 1 },
             filters     => sub { 1 },
-            required   => sub { 1 },
-            min_length => sub { 1 },
-            max_length => sub { 1 },
-            data_type  => sub { 1 },
-            ref_type   => sub { 1 },
-            regex      => sub { 1 },
-            element => sub { 1 },
+            required    => sub { 1 },
+            min_length  => sub { 1 },
+            max_length  => sub { 1 },
+            data_type   => sub { 1 },
+            ref_type    => sub { 1 },
+            regex       => sub { 1 },
+            element     => sub { 1 },
 
         };
 

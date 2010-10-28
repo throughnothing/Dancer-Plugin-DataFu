@@ -80,7 +80,7 @@ use Data::Dumper::Concise qw/Dumper/;
 }
 
 sub render {
-    my ( $self, $name, $dataset, $profile, @options ) = @_;
+    my ( $self, $name, $profile, $dataset, @options ) = @_;
     my $configuration = {};
        $profile = $self->{profile}->{$profile} if $profile;;
     
@@ -115,7 +115,6 @@ sub render {
         name    => $name,
         prof    => $profile,
         vars    => $configuration,
-        data    => $dataset,
         content => undef
     };
     
@@ -126,7 +125,8 @@ sub render {
     }
     
     $tvars->{content} = join( "\n", @grid_parts );
-    push @grid_table, $tempro->($self->temppath('trow.tt'), $tvars);
+    $tvars->{columns} = $tempro->($self->temppath('trow.tt'), $tvars)
+    if defined $profile->{columns};
     
     @grid_parts = ();
     $counter = 0;
@@ -165,7 +165,8 @@ sub render {
     
     # footer
     if (defined $profile->{navigation}) {
-        $tvars->{col} = $profile->{columns};
+        $tvars->{data} = $dataset;
+        $tvars->{col}  = $profile->{columns};
         $tvars->{navigation} = $tempro->($self->temppath('trow.tt'),
             { content => $tempro->($self->temppath('tnavigation.tt'), $tvars) }
         );
