@@ -14,40 +14,45 @@ use Dancer qw/:syntax !error !params/;
 use File::ShareDir qw/:ALL/;
 use Data::Dumper::Concise qw/Dumper/;
 
-sub fields {
-    my ($self, @fields) = @_;
-    if (@fields) {
-        if ("HASH" eq ref $fields[0]) {
-            foreach my $field (%{$fields[0]}) {
-                $self->{data}->{fields}->{$field} = $fields[0]->{$field};
-            }
-        }
-        else {
-            my $fields = { @fields };
-            foreach my $field (%{$fields}) {
-                $self->{data}->{fields}->{$field} = $fields->{$field};
-            }
-        }
-    }
-    return $self->{data}->{fields};
-}
+{
+    no warnings 'redefine';
 
-sub params {
-    my ($self, @params) = @_;
-    if (@params) {
-        if ("HASH" eq ref $params[0]) {
-            foreach my $param (%{$params[0]}) {
-                $self->{data}->{params}->{$param} = $params[0]->{$param};
+    sub fields {
+        my ($self, @fields) = @_;
+        if (@fields) {
+            if ("HASH" eq ref $fields[0]) {
+                foreach my $field (%{$fields[0]}) {
+                    $self->{data}->{fields}->{$field} = $fields[0]->{$field};
+                }
+            }
+            else {
+                my $fields = { @fields };
+                foreach my $field (%{$fields}) {
+                    $self->{data}->{fields}->{$field} = $fields->{$field};
+                }
             }
         }
-        else {
-            my $params = { @params };
-            foreach my $param (%{$params}) {
-                $self->{data}->{params}->{$param} = $params->{$param};
-            }
-        }
+        return $self->{data}->{fields};
     }
-    return $self->{data}->{params};
+    
+    sub params {
+        my ($self, @params) = @_;
+        if (@params) {
+            if ("HASH" eq ref $params[0]) {
+                foreach my $param (%{$params[0]}) {
+                    $self->{data}->{params}->{$param} = $params[0]->{$param};
+                }
+            }
+            else {
+                my $params = { @params };
+                foreach my $param (%{$params}) {
+                    $self->{data}->{params}->{$param} = $params->{$param};
+                }
+            }
+        }
+        return $self->{data}->{params};
+    }
+
 }
 
 sub render {
