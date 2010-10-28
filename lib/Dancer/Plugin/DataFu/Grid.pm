@@ -1,6 +1,7 @@
 # ABSTRACT: Dancer HTML Grid/Table renderer
 package Dancer::Plugin::DataFu::Grid;
 
+use strict;
 use warnings;
 use 5.008001;
 use Template;
@@ -11,6 +12,7 @@ use Hash::Merge qw/merge/;
 use Oogly qw/:all !error/;
 use Dancer qw/:syntax !error/;
 use File::ShareDir qw/:ALL/;
+use Data::Dumper::Concise qw/Dumper/;
 
 {
     no warnings 'redefine';

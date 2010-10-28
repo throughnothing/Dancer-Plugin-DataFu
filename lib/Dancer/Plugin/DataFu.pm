@@ -8,13 +8,15 @@ use Dancer::Plugin;
 use Dancer::Plugin::DataFu::Form;
 use Dancer::Plugin::DataFu::Grid;
 
-my  $settings = plugin_setting;
+my  $settings = {};
 
 register 'form' => sub {
+    $settings = plugin_setting;
     return Dancer::Plugin::DataFu::Form->new($settings);
 };
 
 register 'grid' => sub {
+    $settings = plugin_setting;
     return Dancer::Plugin::DataFu::Grid->new($settings);
 };
 
@@ -23,13 +25,32 @@ register 'grid' => sub {
     # form rendering and validation
 
     get 'login' => sub {
-        return form->render('user.login', 'user.password');
+        return form->render('form_name', '/action', 'profile.field', 'profile.field');
+        # return form->render('login', '/submit_login', 'user.login', 'user.password');
     };
     
     post 'login' => sub {
         my $input = form;
-        redirect '/dashboard' if $input->validate('user.login', 'user.password');
-        return $input->render('user.login', 'user.password');
+        return redirect '/dashboard' if $input->validate('user.login', 'user.password');
+        redirect '/login';
+    };
+    
+    # grid rendering
+    
+    # Important Note! The order arguments are received by the render function
+    # has now changed. Please examine.
+    
+    get '/user_list' => sub {
+        return grid->render('table_name', 'profile_name', $dataset);
+        # $dataset is an array of hashes
+    };
+    
+    # grid rendering with Dancer::Plugin::DBIC
+    
+    get '/user_list' => sub {
+        my $rs = schema->resultset('Foo');
+        $rs->result_class('DBIx::Class::ResultClass::HashRefInflator');
+        return grid->render('table_name', 'profile_name', [$rs->all]);
     };
 
 =head1 DESCRIPTION
@@ -67,6 +88,11 @@ manipulating pleasure, e.g.
 
     $ dancer-datafu
     ... copied HTML template from ... to ...
+    
+    or
+    
+    $ dancer-datafu /tmp/elements
+    ... copied HTML template from ... to /tmp/elements
 
 Form elements can be rendered individually or as part of a form, custom form
 elements can be created and registered for automatic use in form generation,
@@ -142,7 +168,38 @@ would be referenced as ...
 Requiring only the form name, action URL and a list of fields (profile.fieldname),
 Dancer::Plugin::DataFu makes form validation and generation fun and easy.
     
-    form->render('form', '/action', 'user.login');
+    form->render('form', '/action', 'profile.field');
+    
+In some cases you may not want to use hardcoded .pl profile files,
+Dancer::Plugin::DataFu::Form provides a convenient accessor to allow you to
+manually define profiles on-demand.
+
+    my $form = form;
+    
+    $form->fields('field' => {
+        label => '...',
+        validation => sub {
+            ...
+        }
+    });
+    
+    $form->render('form', '/action');
+    
+Because field definitions can contain filters which alter internal copies of the
+GET and POST parameters passed in by the form, Dancer::Plugin::DataFu::Form provides
+a convenient accessor to those modified parameters.
+
+    my $form = form;
+    
+    $form->fields('full_name' => {
+        required => 1,
+        filters => [qw/strip trim camelcase/]
+    });
+    
+    $form->validate('full_name');
+    
+    # get modified parameters
+    my $params = $form->params;
     
 =head2 FORM PROFILE SPECIFICATION
 
@@ -398,7 +455,7 @@ the name of the profile. e.g.
         { id => 109, col1 => 'column1j', col2 => 'column2j' },
     ];
 
-    grid->render('name', $dataset, 'user');
+    grid->render('name', $dataset, 'profile_name');
     
 =head2 GRID PROFILE SPECIFICATION
 
