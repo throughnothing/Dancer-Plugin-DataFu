@@ -19,7 +19,7 @@ templates stored in the main Perl library, to the current working directory.
 =cut
 
 sub copy_templates {
-    my $to   = Cwd::getcwd();
+    my $to   = $ARGV[0] || Cwd::getcwd();
     my $from = module_dir('Dancer::Plugin::DataFu') . "/elements";
     foreach my $tmpl ( glob path $from, '*.tt' ) {
             my ( $file, $name ) = $tmpl =~ /.*[\\\/]((\w+)\.tt)/;
