@@ -205,7 +205,8 @@ sub templates {
         # Oogly::Oogly(mixins => {}, fields => $fields);
 
         my $globule = {};
-        my $params  = params;
+        # my $params  = params;
+        my $params  = Dancer::params;
         foreach my $key ( keys %{$fields} ) {
             foreach my $field ( keys %{ $fields->{$key} } ) {
                 $globule->{"$key.$field"} = $fields->{$key}->{$field};
